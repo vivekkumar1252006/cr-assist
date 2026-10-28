@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Class Representative Assist — student portal for attendance, complaints & coordination" />
+  <title>Class Representative Assist · Student Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* Intro splash — painted straight from HTML (before React) so nothing behind it can
+       flash. Lives outside #root; main.jsx holds it ~2s, then fades it out over /login. */
+    #app-loading {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      background:
+        radial-gradient(46% 36% at 50% 42%, rgba(23, 119, 232, .15), rgba(23, 119, 232, 0) 72%),
+        linear-gradient(180deg, #f7fbff 0%, #e9f2fe 55%, #dcebfc 100%);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      opacity: 1;
+      transition: opacity .55s ease;
+    }
+
+    #app-loading.splash-hide {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    html.splash-loading,
+    body.splash-loading {
+      overflow: hidden;
+    }
+
+    .splash-logo-wrap {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: clamp(116px, 30vw, 156px);
+      aspect-ratio: 1;
+      margin-bottom: 18px;
+    }
+
+    /* Circular CR Assist logo with soft blue glow */
+    .splash-logo {
+      width: 70%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow:
+        0 14px 34px rgba(18, 63, 122, .22),
+        0 0 0 4px #fff,
+        0 0 0 6px rgba(23, 119, 232, .22),
+        0 0 26px rgba(23, 119, 232, .3);
+      animation: splash-breathe 2.2s ease-in-out infinite;
+    }
+
+    /* Rotating loader ring around the logo */
+    .splash-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 3px solid rgba(23, 119, 232, .12);
+      border-top-color: #1877e8;
+      box-shadow: 0 0 22px rgba(23, 119, 232, .32), inset 0 0 14px rgba(23, 119, 232, .1);
+      animation: spin .9s linear infinite;
+    }
+
+    /* Expanding halo pulse behind the ring */
+    .splash-halo {
+      position: absolute;
+      inset: -4%;
+      border-radius: 50%;
+      border: 1.5px solid rgba(23, 119, 232, .3);
+      filter: blur(1.5px);
+      pointer-events: none;
+      animation: splash-halo 2.1s cubic-bezier(.25, .55, .35, 1) infinite;
+    }
+
+    .splash-title {
+      margin: 0;
+      color: #10356f;
+      font-size: clamp(17px, 3.6vw, 21px);
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+
+    .splash-subtitle {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #5b729b;
+      font-size: clamp(12.5px, 2.9vw, 14px);
+      font-weight: 600;
+    }
+
+    .splash-dots {
+      display: inline-flex;
+      gap: 4px;
+      margin-left: 2px;
+    }
+
+    .splash-dots i {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #1877e8;
+      opacity: .25;
+      animation: splash-dot 1.15s ease-in-out infinite;
+    }
+
+    .splash-dots i:nth-child(2) {
+      animation-delay: .17s;
+    }
+
+    .splash-dots i:nth-child(3) {
+      animation-delay: .34s;
+    }
+
+    @keyframes splash-breathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.045); }
+    }
+
+    @keyframes splash-halo {
+      0% { transform: scale(.78); opacity: 0; }
+      28% { opacity: .9; }
+      100% { transform: scale(1.24); opacity: 0; }
+    }
+
+    @keyframes splash-dot {
+      0%, 100% { opacity: .25; transform: translateY(0); }
+      40% { opacity: 1; transform: translateY(-3px); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .splash-logo,
+      .splash-ring,
+      .splash-halo,
+      .splash-dots i {
+        animation: none;
+      }
+
+      #app-loading {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- React mounts here -->
+  <div id="root"></div>
+
+  <!-- Splash overlay: sits outside #root so React mounting does not remove it. -->
+  <div id="app-loading" role="status" aria-live="polite" aria-label="Loading Class Representative Assist">
+    <div class="splash-logo-wrap">
+      <span class="splash-halo"></span>
+      <span class="splash-ring"></span>
+      <img class="splash-logo" src="/logo.png" alt="" />
+    </div>
+    <p class="splash-title">Class Representative Assist</p>
+    <p class="splash-subtitle">
+      Loading
+      <span class="splash-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    </p>
+  </div>
+
+  <script>
+    // Reference point so the splash lasts ~2s from first paint, not from JS load time.
+    window.__SPLASH_START = performance.now();
+    document.documentElement.classList.add('splash-loading');
+  </script>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>
